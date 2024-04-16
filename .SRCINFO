@@ -1,6 +1,6 @@
 pkgbase = midori
 	pkgdesc = Web browser based on Floorp
-	pkgver = 11.2.2
+	pkgver = 11.3.1
 	pkgrel = 1
 	url = https://github.com/goastian/midori-desktop
 	arch = x86_64
@@ -17,6 +17,7 @@ pkgbase = midori
 	makedepends = llvm
 	makedepends = mercurial
 	makedepends = mesa
+	makedepends = mold
 	makedepends = nasm
 	makedepends = nodejs
 	makedepends = python
@@ -58,7 +59,7 @@ pkgbase = midori
 	options = !lto
 	options = !makeflags
 	options = !strip
-	source = midori-tensei::git+https://github.com/goastian/midori-desktop.git#tag=v11.2.2
+	source = midori-tensei::git+https://github.com/goastian/midori-desktop.git#tag=v11.3.1
 	source = goastian.l10n-central::git+https://github.com/goastian/l10n-central.git
 	source = lss-v2022.10.12.tar.gz::https://chromium.googlesource.com/linux-syscall-support/+archive/refs/tags/v2022.10.12.tar.gz
 	source = midori.desktop
