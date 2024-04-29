@@ -21,6 +21,7 @@ pkgbase = midori
 	makedepends = nasm
 	makedepends = nodejs
 	makedepends = python
+	makedepends = python-setuptools
 	makedepends = rust
 	makedepends = unzip
 	makedepends = wasi-compiler-rt

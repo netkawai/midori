@@ -54,6 +54,7 @@ makedepends=(
   nasm
   nodejs
   python
+  python-setuptools
   rust
   unzip
   wasi-compiler-rt
