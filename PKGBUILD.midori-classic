@@ -42,8 +42,8 @@ conflicts=("midori")
 
 options=(!emptydirs)
 
-#_commit=f6b3b1e030db7eb2de7faf73ec4ccc18949b668d  # 9.0
-_commit=d8546ca689af185a456ec1f394bb89926d7c142a  # 9.0r7
+#_commit=f6b3b1e030db7eb2de7faf73ec4ccc18949b668d # 9.0
+_commit=d8546ca689af185a456ec1f394bb89926d7c142a # 9.0r7
 
 _pkgsrc="$_pkgname"
 source=("$_pkgsrc"::"git+$url.git#commit=$_commit")
