@@ -5,6 +5,9 @@
 # Contributor: Johannes Krampf <wuischke@amule.org>
 # Contributor: Bartłomiej Piotrowski <barthalion@gmail.com>
 
+#: ${_commit=f6b3b1e030db7eb2de7faf73ec4ccc18949b668d} # 9.0
+: ${_commit=d8546ca689af185a456ec1f394bb89926d7c142a} # 9.0r7
+
 _pkgname="midori-classic"
 pkgname="$_pkgname"
 pkgver=9.0
@@ -15,13 +18,10 @@ license=('LGPL-2.1-or-later')
 arch=('x86_64')
 
 depends=(
-  'aria2'
   'gcr'
   'libarchive'
   'libpeas'
-  'libxss'
   'webkit2gtk'
-  'zeitgeist'
 )
 makedepends=(
   'cmake'
@@ -40,25 +40,22 @@ optdepends=(
 provides=("midori=$pkgver")
 conflicts=("midori")
 
-options=(!emptydirs)
-
-#_commit=f6b3b1e030db7eb2de7faf73ec4ccc18949b668d # 9.0
-_commit=d8546ca689af185a456ec1f394bb89926d7c142a # 9.0r7
+options=('!debug' '!emptydirs')
 
 _pkgsrc="$_pkgname"
 source=("$_pkgsrc"::"git+$url.git#commit=$_commit")
 sha256sums=('SKIP')
 
 build() {
+  export CFLAGS
+  CFLAGS+=' -fPIC -Wno-error=int-conversion'
+
   local _cmake_options=(
     -B build
     -S "$_pkgsrc"
     -G Ninja
     -DCMAKE_BUILD_TYPE=None
     -DCMAKE_INSTALL_PREFIX='/usr'
-    -DCMAKE_INSTALL_LIBDIR='lib'
-    -DCMAKE_C_FLAGS="$CFLAGS -fPIC -w"
-    -DVALA_CFLAGS="$CFLAGS -fPIC -w"
     -Wno-dev
   )
 
