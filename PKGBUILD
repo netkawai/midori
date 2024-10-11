@@ -9,14 +9,14 @@
 : ${_build_pgo_reuse:=try}
 : ${_build_pgo_xvfb:=false}
 
-: ${_ver_clang=17}
-: ${RUSTUP_TOOLCHAIN:=1.77}
-: ${_commit=c08be9dd5d50e52a3df2ea2054a2058798f060d2} # 11.3.4.r135
+: ${_ver_clang=}
+: ${RUSTUP_TOOLCHAIN:=stable}
+: ${_commit=1ff9155f6d640616e4af89a29e351718f73d7af8} # 11.4
 
 ## basic info
 _pkgname="midori"
 pkgname="$_pkgname"
-pkgver=11.3.4
+pkgver=11.4
 pkgrel=1
 pkgdesc="Web browser based on Floorp"
 url="https://github.com/goastian/midori-desktop"
@@ -42,7 +42,7 @@ depends=(
   zlib
 )
 makedepends=(
-  "${RUSTUP_TOOLCHAIN:+rustup}"
+  #"${RUSTUP_TOOLCHAIN:+rustup}"
   "clang${_ver_clang:-}"
   "lld${_ver_clang:-}"
   "llvm${_ver_clang:-}"
@@ -57,12 +57,10 @@ makedepends=(
   jack
   mercurial
   mesa
-  mold
   nasm
   nodejs
   python
   python-setuptools
-  rustup
   unzip
   wasi-libc
   wasi-libc++
@@ -87,7 +85,7 @@ if [[ "${_build_pgo::1}" == "t" ]]; then
     makedepends+=(
       weston
       xorg-xwayland
-      xwayland-run # AUR
+      wlheadless-run # aur/xwayland-run-git
     )
   fi
 fi
@@ -117,29 +115,6 @@ _source_main() {
   )
 }
 
-_source_patch() {
-  local _patch_commit_1="24a6ea8ac216b6e63c6d8dfbfed967236bbf75a2"
-  source+=(
-    "18d19413472f-${_patch_commit_1::7}.patch"::"https://aur.archlinux.org/cgit/aur.git/plain/18d19413472f.patch?h=firefox-esr&id=$_patch_commit_1"
-    "6af7194e2778-${_patch_commit_1::7}.patch"::"https://aur.archlinux.org/cgit/aur.git/plain/6af7194e2778.patch?h=firefox-esr&id=$_patch_commit_1"
-    "b1cc62489fae-${_patch_commit_1::7}.patch"::"https://aur.archlinux.org/cgit/aur.git/plain/b1cc62489fae.patch?h=firefox-esr&id=$_patch_commit_1"
-  )
-  sha256sums+=(
-    '3cc55401ed5e027f1b9e667b0b52296af11f3c5c62b4a80b7e55cda0e117ed18'
-    '6952f93889acb514e3b06e251ea901df88c39b429da9677cd5547d90a8b6c73e'
-    'f66a944fa8804c16b1f7bd9b42b18bfc2552a891adc148085f4b91685e8db117'
-  )
-
-  local _patch_commit_2="d2127a9424507a38cff13cce49403214a8190bed"
-  local _url_arch="https://gitlab.archlinux.org/archlinux/packaging/packages/firefox/-/raw/$_patch_commit_2"
-  source+=(
-    "0004-Bug-1912663-${_patch_commit_2::7}.patch"::"$_url_arch/0004-Bug-1912663-Fix-some-build-issues-with-cbindgen-0.27.patch"
-  )
-  sha256sums+=(
-    'dd2aba1c02c21b89ceed0713a6aa0241365fe79b1e3a4d21cdcd7231db6fab5e'
-  )
-}
-
 _source_midori_tensei() {
   source+=(
     'goastian.l10n-central'::'git+https://github.com/goastian/l10n-central.git'
@@ -159,7 +134,6 @@ _prepare_midori_tensei() (
 
 _source_main
 _source_midori_tensei
-_source_patch
 
 prepare() {
   _submodule_update() {
@@ -272,7 +246,6 @@ export STRIP_FLAGS="--strip-debug --strip-unneeded"
 
 # Optimization
 ac_add_options --enable-optimize=-O3
-ac_add_options --enable-linker=mold
 ac_add_options --enable-lto=cross,full
 ac_add_options OPT_LEVEL="3"
 ac_add_options RUSTC_OPT_LEVEL="3"
@@ -318,6 +291,10 @@ build() {
   # malloc_usable_size is used in various parts of the codebase
   CFLAGS="${CFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
   CXXFLAGS="${CXXFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+
+  # error: "STL code can only be used with -fno-exceptions"
+  CFLAGS="${CFLAGS/-fexceptions/-fno-exceptions}"
+  CXXFLAGS="${CXXFLAGS/-fexceptions/-fno-exceptions}"
 
   # LTO/PGO needs more open files
   ulimit -n 4096

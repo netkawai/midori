@@ -1,0 +1,4 @@
+[midori]
+source = "git"
+git = "https://github.com/goastian/midori-desktop.git"
+prefix = "v"
