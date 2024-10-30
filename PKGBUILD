@@ -4,15 +4,6 @@
 # https://astian.org/midori-browser/download/
 # https://github.com/goastian/midori-desktop
 
->&2 echo 'Warning: Consider switching to a different browser.'
->&2 echo
->&2 echo 'Midori has not been updated for CVE-2024-9680.  There have been'
->&2 echo '"reports of this vulnerability being exploited in the wild."'
->&2 echo
->&2 echo 'For more information, visit:'
->&2 echo '    https://www.mozilla.org/en-US/security/advisories/mfsa2024-51'
->&2 echo
-
 ## options
 : ${_build_pgo:=true}
 : ${_build_pgo_reuse:=try}
@@ -20,13 +11,13 @@
 
 : ${_ver_clang=}
 : ${RUSTUP_TOOLCHAIN:=stable}
-: ${_commit=1ff9155f6d640616e4af89a29e351718f73d7af8} # 11.4
+: ${_commit=38bb05d7429d052c80f5c3992af5d49a04046428} # 11.4.1
 
 ## basic info
 _pkgname="midori"
 pkgname="$_pkgname"
-pkgver=11.4
-pkgrel=2
+pkgver=11.4.1
+pkgrel=1
 pkgdesc="Web browser based on Floorp"
 url="https://github.com/goastian/midori-desktop"
 arch=('x86_64')
@@ -106,8 +97,6 @@ options=(
   !makeflags
   !strip
 )
-
-install="$_pkgname.install"
 
 _source_main() {
   : ${_lssver:=v2022.10.12}
