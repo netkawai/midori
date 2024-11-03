@@ -11,12 +11,12 @@
 
 : ${_ver_clang=}
 : ${RUSTUP_TOOLCHAIN:=stable}
-: ${_commit=38bb05d7429d052c80f5c3992af5d49a04046428} # 11.4.1
+: ${_commit=455c8c456482640bff119711b5e67a2446390aeb} # 11.4.3
 
 ## basic info
 _pkgname="midori"
 pkgname="$_pkgname"
-pkgver=11.4.1
+pkgver=11.4.3
 pkgrel=1
 pkgdesc="Web browser based on Floorp"
 url="https://github.com/goastian/midori-desktop"

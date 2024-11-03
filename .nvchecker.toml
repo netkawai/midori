@@ -1,4 +1,4 @@
 [midori]
-source = "git"
-git = "https://github.com/goastian/midori-desktop.git"
-prefix = "v"
+source = "regex"
+url = "https://github.com/goastian/midori-desktop/raw/HEAD/browser/config/version_display.txt"
+regex = ".*"
