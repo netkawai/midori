@@ -1,6 +1,6 @@
 pkgbase = midori
 	pkgdesc = Web browser based on Floorp
-	pkgver = 11.4.3
+	pkgver = 11.5
 	pkgrel = 1
 	url = https://github.com/goastian/midori-desktop
 	arch = x86_64
@@ -59,13 +59,15 @@ pkgbase = midori
 	options = !lto
 	options = !makeflags
 	options = !strip
-	source = midori-tensei::git+https://github.com/goastian/midori-desktop.git#commit=455c8c456482640bff119711b5e67a2446390aeb
+	source = midori-tensei::git+https://github.com/goastian/midori-desktop.git#commit=a4a9eb77a0e17dbd8869af25974baf7a55797334
 	source = lss-v2022.10.12.tar.gz::https://chromium.googlesource.com/linux-syscall-support/+archive/refs/tags/v2022.10.12.tar.gz
 	source = midori.desktop
 	source = goastian.l10n-central::git+https://github.com/goastian/l10n-central.git
+	source = 50d41051085b.patch::https://hg.mozilla.org/mozilla-central/raw-rev/50d41051085b
 	sha256sums = SKIP
 	sha256sums = SKIP
 	sha256sums = 7ef0f85f2b111caa08a3e855cb4b6595b6d0f62b3de13ce59eea94a580eec470
 	sha256sums = SKIP
+	sha256sums = f68c5fd889288726fa6deff0aec6d30c60c0864e1ba9318cb3186af6a771748d
 
 pkgname = midori
