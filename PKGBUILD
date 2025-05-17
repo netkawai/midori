@@ -11,11 +11,11 @@
 
 : ${_ver_clang=}
 : ${RUSTUP_TOOLCHAIN:=stable}
-: ${_commit=c32ca61946732d257966db6f9c7e4600b29fbcd3}
+: ${_commit=008262ad4e359694c85d83369326e3f4a75ec967}
 
 _pkgname="midori"
 pkgname="$_pkgname"
-pkgver=11.5.1
+pkgver=11.5.2
 pkgrel=1
 pkgdesc="Web browser based on Floorp"
 url="https://github.com/goastian/midori-desktop"
@@ -451,7 +451,7 @@ Version=2
 END
 
   # Replace duplicate binary
-  ln -srf "$pkgdir/usr/bin/$_pkgname" "$pkgdir/usr/lib/$_pkgname/$_pkgname-bin"
+  ln -sf "$_pkgname" "$pkgdir/usr/lib/$_pkgname/$_pkgname-bin"
 
   # Use system certificates
   local nssckbi="$pkgdir/usr/lib/$_pkgname/libnssckbi.so"
