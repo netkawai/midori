@@ -7,7 +7,7 @@
 ## options
 : ${_build_pgo:=true}
 : ${_build_pgo_reuse:=try}
-: ${_build_pgo_xvfb:=false}
+: ${_build_pgo_xvfb:=true}
 
 : ${_ver_clang=}
 : ${RUSTUP_TOOLCHAIN:=stable}
@@ -16,7 +16,7 @@
 _pkgname="midori"
 pkgname="$_pkgname"
 pkgver=11.5.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Web browser based on Floorp"
 url="https://github.com/goastian/midori-desktop"
 arch=('x86_64')
@@ -28,7 +28,6 @@ depends=(
   gtk3
   libevent
   libjpeg
-  libpulse
   libvpx.so
   libwebp.so
   libxss
@@ -36,24 +35,21 @@ depends=(
   mime-types
   nspr
   nss
-  pipewire
   ttf-font
   zlib
 )
 makedepends=(
-  #"${RUSTUP_TOOLCHAIN:+rustup}"
-  "clang${_ver_clang:-}"
-  "lld${_ver_clang:-}"
-  "llvm${_ver_clang:-}"
-  "wasi-compiler-rt${_ver_clang:-}"
   cargo
   cbindgen
+  clang
   diffutils
   dump_syms
   git
   imake
   inetutils
   jack
+  lld
+  llvm
   mercurial
   mesa
   nasm
@@ -61,6 +57,7 @@ makedepends=(
   python
   python-setuptools
   unzip
+  wasi-compiler-rt
   wasi-libc
   wasi-libc++
   wasi-libc++abi
@@ -84,7 +81,7 @@ if [[ "${_build_pgo::1}" == "t" ]]; then
     makedepends+=(
       weston
       xorg-xwayland
-      wlheadless-run # aur/xwayland-run-git
+      wlheadless-run # aur/xwayland-run
     )
   fi
 fi
@@ -110,20 +107,24 @@ _source_main() {
 }
 
 _source_midori_tensei() {
-  source+=(
-    'goastian.l10n-central'::'git+https://github.com/goastian/l10n-central.git'
-  )
-  sha256sums+=(
-    'SKIP'
+  local _sources_add=(
+    'goastian.l10n-central'::'git+https://github.com/goastian/l10n-central.git'::'floorp/browser/locales/l10n-central'
   )
 
-  _prepare_midori_tensei() (
-    cd "$srcdir/$_pkgsrc"
-    local _submodules=(
-      'goastian.l10n-central'::'floorp/browser/locales/l10n-central'
-    )
+  local _p _idx _src _sm_prep _sm_func
+  for _p in ${_sources_add[@]}; do
+    _idx="${_p%%::*}"
+    _sm_prep+=("${_idx}::${_p##*::}")
+    _src="${_p%::*}"
+    source+=("$_src")
+    sha256sums+=('SKIP')
+  done
+
+  eval "_prepare_midori_tensei() (
+    cd \"\$srcdir/\$_pkgsrc\"
+    local _submodules=(${_sm_prep[@]})
     _submodule_update
-  )
+  )"
 }
 
 _source_main
@@ -134,7 +135,7 @@ prepare() {
     local _module
     for _module in "${_submodules[@]}"; do
       git submodule init "${_module##*::}"
-      git submodule set-url "${_module##*::}" "$srcdir/${_module%::*}"
+      git submodule set-url "${_module##*::}" "$srcdir/${_module%%::*}"
       git -c protocol.file.allow=always submodule update "${_module##*::}"
     done
   }
@@ -161,6 +162,7 @@ mk_add_options MOZ_OBJDIR=${PWD@Q}/obj
 ac_add_options --prefix=/usr
 ac_add_options --enable-release
 ac_add_options --enable-hardening
+ac_add_options --enable-optimize
 ac_add_options --enable-rust-simd
 ac_add_options --enable-wasm-simd
 ac_add_options --enable-linker=lld
@@ -204,8 +206,6 @@ ac_add_options --enable-eme=widevine
 ac_add_options --enable-jack
 ac_add_options --enable-jxl
 ac_add_options --enable-proxy-bypass-protection
-ac_add_options --enable-pulseaudio
-ac_add_options --enable-raw
 ac_add_options --enable-sandbox
 ac_add_options --enable-unverified-updates
 ac_add_options --enable-webrtc
@@ -227,12 +227,6 @@ ac_add_options --disable-debug-js-modules
 ac_add_options --enable-strip
 ac_add_options --enable-install-strip
 export STRIP_FLAGS="--strip-debug --strip-unneeded"
-
-# Optimization
-ac_add_options --enable-optimize
-ac_add_options --enable-lto=cross,full
-ac_add_options OPT_LEVEL="2"
-ac_add_options RUSTC_OPT_LEVEL="2"
 
 # Other
 export AR=llvm-ar${_ver_clang:+-$_ver_clang}
@@ -313,12 +307,12 @@ build() (
     if [[ "${_build_pgo_reuse::1}" == "t" ]]; then
       if [[ -s "$_old_profdata" ]]; then
         echo "Restoring old profile data."
-        cp --reflink=auto -f "$_old_profdata" merged.profdata
+        cp -f "$_old_profdata" merged.profdata
       fi
 
       if [[ -s "$_old_jarlog" ]]; then
         echo "Restoring old jar log."
-        cp --reflink=auto -f "$_old_jarlog" jarlog
+        cp -f "$_old_jarlog" jarlog
       fi
     fi
 
@@ -365,12 +359,13 @@ END
     if [[ -s merged.profdata ]]; then
       stat -c "Profile data found (%s bytes)" merged.profdata
       cat >> .mozconfig - << END
+ac_add_options --enable-lto=cross,full
 ac_add_options --enable-profile-use=cross
 ac_add_options --with-pgo-profile-path=${PWD@Q}/merged.profdata
 END
 
       # save profdata for reuse
-      cp --reflink=auto -f merged.profdata "$_old_profdata"
+      cp -f merged.profdata "$_old_profdata"
     else
       echo "Profile data not found."
     fi
@@ -382,7 +377,7 @@ ac_add_options --with-pgo-jarlog=${PWD@Q}/jarlog
 END
 
       # save jarlog for reuse
-      cp --reflink=auto -f jarlog "$_old_jarlog"
+      cp -f jarlog "$_old_jarlog"
     else
       echo "Jar log not found."
     fi
@@ -452,12 +447,6 @@ END
 
   # Replace duplicate binary
   ln -sf "$_pkgname" "$pkgdir/usr/lib/$_pkgname/$_pkgname-bin"
-
-  # Use system certificates
-  local nssckbi="$pkgdir/usr/lib/$_pkgname/libnssckbi.so"
-  if [[ -e "$nssckbi" ]]; then
-    ln -srf "$pkgdir/usr/lib/libnssckbi.so" "$nssckbi"
-  fi
 
   # desktop file
   install -Dm644 ../$_pkgname.desktop \
