@@ -9,8 +9,6 @@
 : ${_build_pgo_reuse:=try}
 : ${_build_pgo_xvfb:=true}
 
-: ${_ver_clang=}
-: ${RUSTUP_TOOLCHAIN:=stable}
 : ${_commit=008262ad4e359694c85d83369326e3f4a75ec967}
 
 _pkgname="midori"
@@ -229,11 +227,11 @@ ac_add_options --enable-install-strip
 export STRIP_FLAGS="--strip-debug --strip-unneeded"
 
 # Other
-export AR=llvm-ar${_ver_clang:+-$_ver_clang}
-export CC=clang${_ver_clang:+-$_ver_clang}
-export CXX=clang++${_ver_clang:+-$_ver_clang}
-export NM=llvm-nm${_ver_clang:+-$_ver_clang}
-export RANLIB=llvm-ranlib${_ver_clang:+-$_ver_clang}
+export AR=llvm-ar
+export CC=clang
+export CXX=clang++
+export NM=llvm-nm
+export RANLIB=llvm-ranlib
 END
 
   local src
@@ -250,11 +248,6 @@ END
 
 build() (
   cd "$_pkgsrc"
-
-  export PATH="/usr/lib/llvm${_ver_clang:-}/bin:$PATH"
-  export LD_LIBRARY_PATH=/usr/lib/llvm${_ver_clang:-}/lib
-
-  export RUSTUP_TOOLCHAIN
 
   export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-$srcdir/xdg-runtime}"
   [ ! -d "$XDG_RUNTIME_DIR" ] && install -dm700 "${XDG_RUNTIME_DIR:?}"
