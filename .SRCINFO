@@ -1,7 +1,7 @@
 pkgbase = midori
 	pkgdesc = Web browser based on Floorp
-	pkgver = 11.5.2
-	pkgrel = 2
+	pkgver = 11.6
+	pkgrel = 1
 	url = https://github.com/goastian/midori-desktop
 	arch = x86_64
 	license = MPL-2.0
@@ -29,7 +29,6 @@ pkgbase = midori
 	makedepends = wasi-libc++abi
 	makedepends = yasm
 	makedepends = zip
-	makedepends = xorg-server-xvfb
 	depends = dbus
 	depends = ffmpeg
 	depends = gtk3
@@ -54,11 +53,11 @@ pkgbase = midori
 	options = !lto
 	options = !makeflags
 	options = !strip
-	source = midori-tensei::git+https://github.com/goastian/midori-desktop.git#commit=008262ad4e359694c85d83369326e3f4a75ec967
+	source = midori-11.6-f94f5c4.tar.gz::https://github.com/goastian/midori-desktop/archive/f94f5c44961cf335d7806dade18ffdb3ce966960.tar.gz
+	source = midori-11.6-l10n-7f40500583f8dc82b3fa4efcd78f7ed32f226a73.tar.gz::https://github.com/goastian/l10n-central/archive/7f40500583f8dc82b3fa4efcd78f7ed32f226a73.tar.gz
 	source = midori.desktop
-	source = goastian.l10n-central::git+https://github.com/goastian/l10n-central.git
 	sha256sums = SKIP
-	sha256sums = 7ef0f85f2b111caa08a3e855cb4b6595b6d0f62b3de13ce59eea94a580eec470
+	sha256sums = SKIP
 	sha256sums = SKIP
 
 pkgname = midori
