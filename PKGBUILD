@@ -141,14 +141,16 @@ ac_add_options --with-google-safebrowsing-api-keyfile=${PWD@Q}/api-google-safe-b
 # Features
 ac_add_options --enable-alsa
 ac_add_options --enable-av1
-ac_add_options --enable-eme=widevine
+#ac_add_options --enable-eme=widevine
+ac_add_options --disable-eme
 ac_add_options --enable-jack
 ac_add_options --enable-jxl
 ac_add_options --enable-proxy-bypass-protection
 ac_add_options --enable-pulseaudio
 ac_add_options --enable-sandbox
 ac_add_options --enable-unverified-updates
-ac_add_options --enable-webrtc
+#ac_add_options --enable-webrtc
+ac_add_options --disable-webrtc
 ac_add_options --disable-crashreporter
 ac_add_options --disable-default-browser-agent
 ac_add_options --disable-parental-controls
@@ -220,6 +222,10 @@ build() (
   # error: "STL code can only be used with -fno-exceptions"
   CFLAGS="${CFLAGS/-fexceptions/}"
   CXXFLAGS="${CXXFLAGS/-fexceptions/}"
+
+  # supress all error and warning
+  CFLGS="-Wno-error -w -ferror-limit=0"
+  CXXFLAGS="-Wno-error -w -ferror-limit=0"
 
   # LTO/PGO needs more open files
   ulimit -n 4096
